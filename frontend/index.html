@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. // Stark Industries OS</title>
+    <!-- Futuristic Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="stark-hud">
+    <!-- Ambient Background Canvas (Grid & Particles) -->
+    <canvas id="ambient-canvas"></canvas>
+    
+    <!-- Top Holographic HUD Bar -->
+    <header class="hud-header glass-panel">
+        <div class="hud-left">
+            <div class="stark-logo">
+                <span class="logo-icon">▲</span>
+                <span class="logo-text">STARK <span class="cyan-glow">INDUSTRIES</span></span>
+            </div>
+            <div class="hud-badge pulse-border">
+                <span class="status-dot online"></span>
+                <span>J.A.R.V.I.S. OS v4.0.0 OMNI</span>
+            </div>
+            <div class="hud-tag">HOST: DELL LATITUDE 7420</div>
+        </div>
+
+        <div class="hud-center">
+            <div class="wake-word-banner" id="wake-status-badge">
+                <span class="pulse-ring"></span>
+                <span class="wake-text">WAKE-WORD ACTIVE: <strong class="cyan-text">"JARVIS"</strong></span>
+            </div>
+        </div>
+
+        <div class="hud-right">
+            <div class="clock-display" id="hud-clock">00:00:00 PKT</div>
+            <div class="wifi-chip" id="hud-wifi-chip" title="Network Connection Status">
+                <span class="wifi-icon">📶</span>
+                <span id="header-wifi-val">WI-FI</span>
+            </div>
+            <div class="battery-chip" id="hud-battery-chip" title="Dell Power Manager: 80% Threshold">
+                <span class="battery-icon">⚡</span>
+                <span id="header-battery-val">--%</span>
+            </div>
+            <button class="settings-btn" id="open-settings-btn" title="Voice & System Settings">
+                ⚙️
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Holographic Grid Interface -->
+    <main class="hud-container">
+        
+        <!-- Left Panel: Hardware Diagnostics & Fast Actions -->
+        <aside class="hud-panel left-panel glass-panel">
+            <div class="panel-header">
+                <span class="panel-corner tl"></span>
+                <span class="panel-corner tr"></span>
+                <h3>// SYSTEM TELEMETRY</h3>
+                <span class="hud-chip">WIN-11 PRO</span>
+            </div>
+
+            <!-- CPU Metric -->
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">CPU LOAD (8 CORES)</span>
+                    <span class="metric-value cyan-text" id="cpu-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="cpu-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- RAM Metric -->
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">MEMORY ALLOCATION</span>
+                    <span class="metric-value blue-text" id="ram-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill blue-fill" id="ram-bar" style="width: 0%;"></div>
+                </div>
+                <div class="metric-sub" id="ram-details">0.0 GB / 15.7 GB ACTIVE</div>
+            </div>
+
+            <!-- Battery Metric -->
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">DELL LATITUDE 7420 POWER</span>
+                    <span class="metric-value green-text" id="battery-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill green-fill" id="battery-bar" style="width: 0%;"></div>
+                </div>
+                <div class="metric-sub" id="battery-sub">Dell 80% Power Profile Active</div>
+            </div>
+
+            <!-- Storage Metric -->
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">PRIMARY DISK (C:)</span>
+                    <span class="metric-value" id="disk-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill orange-fill" id="disk-bar" style="width: 0%;"></div>
+                </div>
+                <div class="metric-sub" id="disk-details">355 GB FREE</div>
+            </div>
+
+            <!-- Real-Time Performance & Automation Analytics Widget -->
+            <div class="metric-card analytics-widget">
+                <div class="metric-info">
+                    <span class="metric-label">NEURAL & SYSTEM LATENCY</span>
+                    <span class="metric-value cyan-text" id="engine-latency-val">~14 ms</span>
+                </div>
+                <div class="analytics-subgrid">
+                    <div class="stat-pill">
+                        <span class="stat-lbl">BACKUP WORKER</span>
+                        <span class="stat-val green-text" id="scheduler-status">ACTIVE (12h)</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-lbl">SCRAPER COPILOT</span>
+                        <span class="stat-val cyan-text">STEALTH V3</span>
+                    </div>
+                </div>
+                <div class="analytics-subgrid" style="margin-top: 6px;">
+                    <div class="stat-pill">
+                        <span class="stat-lbl">LAST VAULT BACKUP</span>
+                        <span class="stat-val" id="last-backup-val">CHECKING...</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-lbl">VAULT ARCHIVES</span>
+                        <span class="stat-val blue-text" id="backup-count-val">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Voice/Click Shortcuts -->
+            <div class="quick-shortcuts">
+                <div class="shortcuts-title">// DIRECT PROTOCOLS & OMNI CONTROLS</div>
+                <div class="shortcut-buttons">
+                    <button class="sc-btn" onclick="executeQuickAction('open_projects')">
+                        📁 Projects
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('open_vault')">
+                        🧠 Obsidian
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('backup_vault')">
+                        📦 Backup Vault
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('generate_scraper')">
+                        🤖 AI Scraper
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('list_processes')">
+                        📊 Processes
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('read_clipboard')">
+                        📋 Clipboard
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('empty_trash')">
+                        🗑️ Purge Trash
+                    </button>
+                    <button class="sc-btn" onclick="executeQuickAction('lock_pc')">
+                        🔒 Lock PC
+                    </button>
+                </div>
+            </div>
+            <span class="panel-corner bl"></span>
+            <span class="panel-corner br"></span>
+        </aside>
+
+        <!-- Center Stage: Arc Reactor Visualizer & State Display -->
+        <section class="hud-center-stage">
+            
+            <div class="reactor-wrapper">
+                <!-- Tony Stark 3D Holographic Particle Core -->
+                <div class="particle-core-container" id="particle-core-container">
+                    <div class="hologram-orbital-ring ring-1"></div>
+                    <div class="hologram-orbital-ring ring-2"></div>
+                    <canvas id="jarvis-particle-canvas"></canvas>
+                </div>
+
+                <!-- Status Banner Under Reactor -->
+                <div class="system-status-box">
+                    <div class="status-indicator-tag" id="jarvis-state-tag">STANDBY // READY</div>
+                    <div class="status-subtext" id="jarvis-spoken-caption">Say "Jarvis" followed by your command, Boss.</div>
+                </div>
+            </div>
+
+            <!-- Soundwave Audio Frequency Bar (Active during voice) -->
+            <div class="audio-wave-strip" id="audio-wave-strip">
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+            </div>
+
+        </section>
+
+        <!-- Right Panel: Conversation Log & Terminal Stream -->
+        <aside class="hud-panel right-panel glass-panel">
+            <div class="panel-header">
+                <span class="panel-corner tl"></span>
+                <span class="panel-corner tr"></span>
+                <h3>// INTELLIGENCE & TELEMETRY</h3>
+                <div class="tab-controls">
+                    <button class="tab-btn active" id="tab-chat-btn" onclick="switchRightTab('chat')">CHAT</button>
+                    <button class="tab-btn" id="tab-terminal-btn" onclick="switchRightTab('terminal')">TERMINAL</button>
+                </div>
+            </div>
+
+            <!-- Chat Transcript Tab -->
+            <div class="tab-content active" id="chat-tab-content">
+                <div class="chat-stream" id="chat-stream">
+                    <div class="chat-message jarvis-msg">
+                        <div class="msg-sender">J.A.R.V.I.S.</div>
+                        <div class="msg-body">
+                            Good day, Boss. All local systems on your Dell Latitude 7420 are fully initialized and operating at peak performance. Continuous wake-word monitoring for "Jarvis" is active. Hukm karein Sir.
+                        </div>
+                        <div class="msg-meta">System Initialized // Sukkur, PK</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostic Terminal Tab -->
+            <div class="tab-content" id="terminal-tab-content">
+                <div class="terminal-feed" id="terminal-feed">
+                    <div class="term-line info">[INIT] Stark OS 3.8.0 Kernel Loaded.</div>
+                    <div class="term-line success">[OK] Host: Dell Latitude 7420 (Win11 Pro).</div>
+                    <div class="term-line success">[OK] Local OS automation engine engaged.</div>
+                    <div class="term-line info">[VOICE] Web Speech API continuous listener active.</div>
+                    <div class="term-line cyan">[STANDBY] Awaiting wake-word 'Jarvis'...</div>
+                </div>
+            </div>
+            <span class="panel-corner bl"></span>
+            <span class="panel-corner br"></span>
+        </aside>
+
+    </main>
+
+    <!-- Bottom Command & Voice Control Bar -->
+    <footer class="hud-footer glass-panel">
+        <div class="footer-controls">
+            
+            <!-- Continuous Wake-Word Toggle -->
+            <button class="control-btn toggle-wake-btn active" id="toggle-wake-btn" title="Toggle Continuous Listening for 'Jarvis'">
+                <span class="btn-icon">🎙️</span>
+                <span class="btn-label" id="wake-toggle-label">WAKE WORD: ACTIVE</span>
+            </button>
+
+            <!-- Manual Push-To-Talk / Tap-To-Speak Button -->
+            <button class="control-btn manual-mic-btn" id="manual-mic-btn" title="Click to speak manually">
+                <span class="btn-icon">⚡</span>
+                <span class="btn-label">PUSH TO TALK</span>
+            </button>
+
+            <!-- Text Prompt Form for Silent / Direct Input -->
+            <form class="command-input-form" id="command-form" onsubmit="handleTextSubmit(event)">
+                <div class="input-wrapper">
+                    <span class="prompt-symbol">&gt;</span>
+                    <input 
+                        type="text" 
+                        id="user-text-input" 
+                        class="cyber-input" 
+                        placeholder="Command J.A.R.V.I.S. (e.g. 'check running processes', 'read main.py', 'lock pc', 'wifi check')..." 
+                        autocomplete="off"
+                    />
+                </div>
+                <button type="submit" class="send-btn" id="send-cmd-btn">
+                    <span>TRANSMIT</span>
+                    <span class="send-arrow">➔</span>
+                </button>
+            </form>
+
+            <!-- Stop Speech Synthesis Button -->
+            <button class="control-btn stop-speech-btn" id="stop-speech-btn" title="Silence Jarvis audio">
+                <span class="btn-icon">🔇</span>
+                <span class="btn-label">MUTE</span>
+            </button>
+
+        </div>
+    </footer>
+
+    <!-- Settings & Voice Configuration Modal -->
+    <div class="hud-modal" id="settings-modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3>// J.A.R.V.I.S. CONFIGURATION & VOICE MATRIX</h3>
+                <button class="close-modal-btn" id="close-settings-btn">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                
+                <!-- Neural Voice Engine Selector -->
+                <div class="setting-group">
+                    <label for="neural-voice-select">Neural Voice Model (Hyper-Realistic Speech):</label>
+                    <select id="neural-voice-select" class="cyber-select">
+                        <option value="en-IN-PrabhatNeural" selected>⭐ Prabhat Neural (South Asian Bilingual / Fluent Roman English) [RECOMMENDED]</option>
+                        <option value="ur-PK-AsadNeural">🇵🇰 Asad Neural (Native Pakistani Urdu Male)</option>
+                        <option value="en-GB-RyanNeural">🇬🇧 Ryan Neural (Classic British Stark J.A.R.V.I.S.)</option>
+                        <option value="hi-IN-MadhurNeural">🇮🇳 Madhur Neural (Fluent Roman Urdu / Hindi)</option>
+                    </select>
+                </div>
+
+                <!-- Speech Recognition Locale -->
+                <div class="setting-group">
+                    <label for="mic-locale-select">Acoustic Microphone Model (Speech Recognition Language):</label>
+                    <select id="mic-locale-select" class="cyber-select">
+                        <option value="en-IN" selected>🎯 South Asian Bilingual (en-IN) — [Tuned for Roman English & Pakistani Accents]</option>
+                        <option value="en-US">🌐 International English (en-US)</option>
+                    </select>
+                </div>
+
+                <!-- Web Speech API Browser Voice Selector (Fallback) -->
+                <div class="setting-group">
+                    <label for="voice-select">Local Browser Voice Fallback (Web Speech API):</label>
+                    <select id="voice-select" class="cyber-select">
+                        <option value="">Searching system voices...</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-col">
+                        <label for="voice-rate">Speech Rate: <span id="rate-val" class="cyan-text">1.05x</span></label>
+                        <input type="range" id="voice-rate" min="0.8" max="1.5" step="0.05" value="1.05" class="cyber-slider">
+                    </div>
+                    <div class="setting-col">
+                        <label for="voice-pitch">Pitch Modulation: <span id="pitch-val" class="cyan-text">0.95</span></label>
+                        <input type="range" id="voice-pitch" min="0.7" max="1.3" step="0.05" value="0.95" class="cyber-slider">
+                    </div>
+                </div>
+
+                <!-- ElevenLabs Voice Switch Info -->
+                <div class="setting-group elevenlabs-box">
+                    <div class="el-header">
+                        <span class="el-title">💎 ElevenLabs Hyper-Realistic Voice Upgrade</span>
+                        <span class="el-status-tag" id="elevenlabs-status-tag">STATUS: READY VIA .ENV</span>
+                    </div>
+                    <p class="el-desc">
+                        To enable ultra-realistic British actor voice synthesis, open your <code>.env</code> file in the project root and provide your <code>ELEVENLABS_API_KEY</code> and optional <code>ELEVENLABS_VOICE_ID</code>.
+                    </p>
+                    <div class="toggle-switch-container">
+                        <label class="switch">
+                            <input type="checkbox" id="elevenlabs-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="switch-label">Enable ElevenLabs High-Fidelity Audio Mode</span>
+                    </div>
+                </div>
+
+                <!-- User Profile Display -->
+                <div class="setting-group profile-box">
+                    <div class="profile-title">// INTEGRATED USER IDENTITY</div>
+                    <div class="profile-details">
+                        <div><strong>Commander:</strong> Shazil Ahmed Shaikh ("Shaziii")</div>
+                        <div><strong>Institution:</strong> Sukkur IBA University (BSCS, 6th Sem)</div>
+                        <div><strong>Target Rig:</strong> Dell Latitude 7420 (Win11 Pro)</div>
+                        <div><strong>Core Ventures:</strong> AeroStudy AI, ResQ (Disaster Alert Hub), AQUA.VERSEE</div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="modal-footer">
+                <button class="cyber-btn" id="save-settings-btn">SAVE & APPLY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
